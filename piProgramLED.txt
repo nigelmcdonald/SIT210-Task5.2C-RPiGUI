@@ -1,0 +1,88 @@
+import RPi.GPIO as GPIO
+import time
+from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QApplication, QMainWindow
+import sys
+
+xStart = 200
+yStart = 100
+wWidth = 370
+wHeight= 200
+
+bluePin = 16 # define pins per colour
+greenPin = 12
+redPin = 21
+GPIO.setmode(GPIO.BCM) # use BCM as BOARD is the pin numbers which dont correlate to GPIO pins
+GPIO.setup(bluePin, GPIO.OUT) # set pin to output mode
+GPIO.setup(greenPin, GPIO.OUT)
+GPIO.setup(redPin, GPIO.OUT)
+    
+class MyWindow(QMainWindow): # class inherits from QMainWindow    
+    def __init__(self): # contructor
+        super(MyWindow, self).__init__()
+        self.setGeometry(xStart, yStart, wWidth, wHeight)
+        self.setWindowTitle("LED CONTROLLER")     
+        self.initUI()           
+    
+    def initUI(self): # use self.xxx to make it accessable anywhere in the class
+        # add a label
+        self.label = QtWidgets.QLabel(self) # added to self QMainWindow object
+        self.label.setText("Press a button to enable the LED")
+        self.label.move(70,0) # move label
+        self.label.adjustSize() # update the size of the label to fit the words
+        
+        # button1
+        self.b1 = QtWidgets.QPushButton(self) 
+        self.b1.setText("Blue")
+        self.b1.move(20,50)
+        self.b1.clicked.connect(self.BlueLightOn) # link button to funciton buttonClickFunc
+        # button2
+        self.b2 = QtWidgets.QPushButton(self) 
+        self.b2.setText("Green")
+        self.b2.move(120,50)
+        self.b2.clicked.connect(self.GreenLightOn) # link button to funciton buttonClickFunc
+        # button3
+        self.b3 = QtWidgets.QPushButton(self) 
+        self.b3.setText("Red")
+        self.b3.move(220,50)
+        self.b3.clicked.connect(self.RedLightOn) # link button to funciton buttonClickFunc
+        # button3
+        self.b4 = QtWidgets.QPushButton(self) 
+        self.b4.setText("ALL OFF")
+        self.b4.move(120,100)
+        self.b4.clicked.connect(self.AllLightsOff) # link button to funciton buttonClickFunc
+        
+    def BlueLightOn(self): # button click function
+        print("Blue on!")
+        GPIO.output(greenPin, GPIO.LOW)
+        GPIO.output(redPin, GPIO.LOW)
+        GPIO.output(bluePin, GPIO.HIGH) # votage high/ LED on
+    
+    def GreenLightOn(self): # button click function
+        print("Green on!")
+        GPIO.output(greenPin, GPIO.HIGH)
+        GPIO.output(redPin, GPIO.LOW)
+        GPIO.output(bluePin, GPIO.LOW) # votage high/ LED on
+        
+    def RedLightOn(self): # button click function
+        print("Red on!")
+        GPIO.output(greenPin, GPIO.LOW)
+        GPIO.output(redPin, GPIO.HIGH)
+        GPIO.output(bluePin, GPIO.LOW) # votage high/ LED on
+    
+    def AllLightsOff(self): # button click function
+        print("All Off!")
+        GPIO.output(greenPin, GPIO.LOW)
+        GPIO.output(redPin, GPIO.LOW)
+        GPIO.output(bluePin, GPIO.LOW) # votage high/ LED on
+
+     
+def window():
+    app = QApplication(sys.argv) #setup OS based application       
+    win = MyWindow() # create window 
+    win.show() # show the window, must be after changes
+    sys.exit(app.exec()) # clean window exit, must be last
+
+window() # call window funcfrom PyQt5 import QtWidgets
+GPIO.cleanup()
+print("Clean complete.")
